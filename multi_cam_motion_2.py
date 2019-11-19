@@ -1,4 +1,4 @@
-s# USAGE
+# USAGE
 # python multi_cam_motion.py
 
 # import the necessary packages
