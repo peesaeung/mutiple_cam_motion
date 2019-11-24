@@ -3,34 +3,33 @@
 
 # import the necessary packages
 from __future__ import print_function
+import datetime
+import time
+import os
+import numpy as np
+import cv2
+import imutils
 from pyimagesearch.basicmotiondetector2 import BasicMotionDetector
 # from pyimagesearch.tempimage import TempImage
 from imutils.video import VideoStream
-import numpy as np
-import datetime
-import imutils
-import time
-import cv2
-import os
 
-def locs(locs, frame):
-    if len(locs) > 0:
+def locs(locsx, frame):
+    if len(locsx) > 0:
             # initialize the minimum and maximum (x, y)-coordinates,
             # respectively
-            (minX, minY) = (np.inf, np.inf)
-            (maxX, maxY) = (-np.inf, -np.inf)
+        (minX, minY) = (np.inf, np.inf)
+        (maxX, maxY) = (-np.inf, -np.inf)
 
             # loop over the locations of motion and accumulate the
             # minimum and maximum locations of the bounding boxes
-            for l in locs:
-                (x, y, w, h) = cv2.boundingRect(l)
-                (minX, maxX) = (min(minX, x), max(maxX, x + w))
-                (minY, maxY) = (min(minY, y), max(maxY, y + h))
+        for l in locsx:
+            (x, y, w, h) = cv2.boundingRect(l)
+            (minX, maxX) = (min(minX, x), max(maxX, x + w))
+            (minY, maxY) = (min(minY, y), max(maxY, y + h))
 
             # draw the bounding box
-            cv2.rectangle(frame, (minX, minY), (maxX, maxY),
-                (0, 0, 255), 3)
-            return
+        cv2.rectangle(frame, (minX, minY), (maxX, maxY), (0, 0, 255), 3)
+        return
 
 # initialize the video streams and allow them to warmup
 print("[INFO] starting cameras...")
@@ -108,15 +107,15 @@ while True:
 #    total += 1
     timestamp = datetime.datetime.now()
     ts = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
-    cv2.putText(frame_1, ts, (10, frame_1.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX,
-        0.35, (0, 0, 255), 1)
-    cv2.putText(frame_2, ts, (10, frame_2.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX,
-        0.35, (0, 0, 255), 1)
+    cv2.putText(frame_1, ts, (10, frame_1.shape[0] - 10),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
+    cv2.putText(frame_2, ts, (10, frame_2.shape[0] - 10),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
 
     # notify when detected
     # check to see if enough time has passed between uploads
 
-    if D1 == True and D2 == True:
+    if D1 is True and D2 is True:
         if (timestamp - lastUploaded).seconds >= 1:
             # increment the motion counter
             motionCounter += 1
