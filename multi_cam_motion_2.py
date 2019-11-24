@@ -6,6 +6,7 @@ from __future__ import print_function
 import datetime
 import time
 import os
+import boto3
 import numpy as np
 import cv2
 import imutils
@@ -32,6 +33,14 @@ def locs(locsx, frame):
         return
 
 # initialize the video streams and allow them to warmup
+key = open("shared/accessKeys.csv", 'r')
+for (i1, row) in enumerate(key):
+    if i1 > 0:
+        buffer = row.split(',')
+key.close()
+ACCESS_KEY = buffer[0]
+SECRET_KEY = buffer[1]
+s3 = boto3.client('s3', aws_access_key_id=ACCESS_KEY, aws_secret_access_key=SECRET_KEY)
 print("[INFO] starting cameras...")
 webcam = VideoStream(src=0, resolution=(800, 600)).start()
 picam = VideoStream(usePiCamera=True, resolution=(800, 600)).start()
@@ -128,8 +137,15 @@ while True:
                 os.makedirs(path)
                 path1 = "Pictures/{timestamp}/path1.jpg".format(timestamp=ts)
                 path2 = "Pictures/{timestamp}/path2.jpg".format(timestamp=ts)
+                s3path = "{timestamp}/".format(timestamp=ts)
                 cv2.imwrite(path1, frame_1)
                 cv2.imwrite(path2, frame_2)
+                with open(path1, 'rb+') as data1:
+                    s3.upload_fileobj(data1, 'peeranut-rpi', s3path+'path1.jpg')
+                    data1.close()
+                with open(path2, 'rb+') as data2:
+                    s3.upload_fileobj(data2, 'peeranut-rpi', s3path+'path2.jpg')
+                    data2.close()
                 # update the last uploaded timestamp and reset the motion
                 # counter
                 lastUploaded = timestamp
